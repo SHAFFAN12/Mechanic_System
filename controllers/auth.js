@@ -6,19 +6,50 @@ const Admin =require('../models/admin');
 const Mechanic =require('../models/mechanic');
 const mechanic = require('../models/mechanic');
 
+const { uploadOnCloudinary } = require( '../cloudinary.js');
+
+
+
+
 const userregister =async (req,res) =>{
     const result= validationResult(req);
     if(!result.isEmpty()){
         return res.status(400).json({errors:result.array()})
     } 
     const {userName, email,password,phoneNumber}=req.body
+    
+    // if([userName, email,password,phoneNumber].some((field) =>
+    //         field?.trim() === "")
+    //     ){
+
+    // } else{
+    //     throw new Error('enter fields');
+    // }
+    
     try{
-let user = await User.findOne({email});
-if(user){
-    return res.status(400).json({msg:'User already exist'})
-}
-user= new User({
+        let user = await User.findOne({email});
+            if(user){
+                return res.status(400).json({msg:'User already exist'})
+            }
+
+    // cloudinary setup start
+    const avatarLocalPath =   req.files?.avatar[0]?.path;
+    // const coverIamgeLocalPath =   req.files?.coverImage[0]?.path;
+        if(!avatarLocalPath){
+           return res.status(400).json({msg:"Avatar file is required!"})
+        }
+        const avatar =  await uploadOnCloudinary(avatarLocalPath);
+        // const coverImage =  await uploadOnCloudinary(coverIamgeLocalPath);
+
+        if(!avatar){
+            return res.status(400).json({msg:"Avatar file is required!"})
+         }
+    // cloudinary setup end
+
+ user = new User({
     userName,
+    avatar:avatar.url,
+    // coverImage: coverImage?.url || "",
     email,
     password,
     phoneNumber
@@ -46,7 +77,8 @@ return res.json({token})
 console.error(err.message)
 res.status(500).json({msg:'server error'})        
 }
-    }
+  
+}
     
 
 
@@ -106,13 +138,28 @@ const mechanicregister =async (req,res) =>{
         return res.status(400).json({errors:result.array()})
     } 
     const {CNIC,name,password,phoneNumber,location,service}=req.body
+    
+    // cloudinary setup start
+    const utilityImageLocalPath =   req.files?.utilityImage[0]?.path;
+        if(!utilityImageLocalPath){
+           return res.status(400).json({msg:"utilityImage file is required!"})
+        }
+        const utilityImage =  await uploadOnCloudinary(utilityImageLocalPath);
+
+        if(!utilityImage){
+            return res.status(400).json({msg:"utilityImage file is required!"})
+         }
+    // cloudinary setup end
+    
+    
     try{
-let mechanic = await Mechanic.findOne({phoneNumber});
-if(mechanic){
-    return res.status(400).json({msg:'mechanic already exist'})
-}
+        let mechanic = await Mechanic.findOne({phoneNumber});
+            if(mechanic){
+                return res.status(400).json({msg:'mechanic already exist'})
+            }
     mechanic= new Mechanic({
     CNIC,
+    utilityImage:utilityImage.url,
     name,
     password,
     service,

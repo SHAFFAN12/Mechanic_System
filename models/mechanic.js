@@ -12,10 +12,10 @@ const mechanicSchema = mongoose.Schema({
             message: props => `${props.value} is not a valid CNIC Number!`
         }
     },
-    // utilityImage: {
-        // type: String, // Assuming you will store the URL of the image in Cloudinary
-        // required: true
-    // },
+    utilityImage: {
+        type: String, // Assuming you will store the URL of the image in Cloudinary
+        required: true
+    },
     name: {
         type: String,
         required: true

@@ -57,6 +57,11 @@ const userSchema = mongoose.Schema({
             message: props => `${props.value} is not a valid Pakistani phone number!`
         }
     },
+
+    avatar:{
+        type: String, //cloudinary url,
+        required: true,
+    },
     email: {
         type: String,
         required: true,
@@ -68,11 +73,11 @@ const userSchema = mongoose.Schema({
     },
     location: {
         type: String,
-        required: true
+        // required: true
     },
     neededService: {
         type: String,
-        required: true
+        // required: true
     }
 })
  module.exports = mongoose.model('User', userSchema)

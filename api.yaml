@@ -1009,10 +1009,10 @@ paths:
   
                       # MECHANIC ACCESS END
   
-  
+                      # User ACCESS Starts
   
   paths:
-  /user:
+  /api/user/:
     get:
       tags:
         - User Access
@@ -1046,21 +1046,253 @@ paths:
           description: Server error
 
   
+  /api/user/profile:
+    get:
+      summary: Retrieve usre profile
+      tags:
+        - User Access
+      security:
+        - login_a_user: []
+      responses:
+        200:
+          description: User profile retrieved successfully
+          schema:
+            $ref: '#/definitions/User'
+        401:
+          $ref: '#/responses/UnauthorizedError'
+        500:
+          $ref: '#/responses/InternalServerError'
+  
+  
+
+
+
+
+
+  /api/user/makeOrder:
+    post:
+      summary: Create a new Order.
+      tags:
+        - User Access
+      description: API to create a new Order.
+      parameters:
+        - in: header
+          name: auth-token
+          description: Authentication token for user authentication.
+          required: true
+          schema:
+            type: string
+        - in: body
+          name: OrderDetails
+          description: Order details for creating a new order.
+          required: true
+          schema:
+            type: object
+            properties:
+              mechanicId:
+                type: string
+                description: ID of the mechanic associated with the order.
+              Service:
+                type: string
+                description: Type of service for the order.
+              Location:
+                type: string
+                description: Location for the order.
+              status:
+                type: string
+                description: Status of the order.
+      security:
+        - login_a_user: []
+      responses:
+        '201':
+          description: Order created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Bad request. Check the request payload.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        '401':
+          description: Unauthorized. User authentication failed.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+    components:
+      schemas:
+        Order:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: The unique identifier for the order.
+            user:
+              type: string
+              description: The ID of the user who created the order.
+            mechanicId:
+              type: string
+              description: The ID of the mechanic associated with the order.
+            Service:
+              type: string
+              description: The type of service for the order.
+            Location:
+              type: string
+              description: The location for the order.
+            status:
+              type: string
+              description: The status of the order.
+
+
+
+
+
+
+# Get api to see the user order history 
+  /api/user/order-history:
+    get:
+      summary: Retrieve Order History
+      tags:
+        - User Access
+      security:
+        - login_a_user: []
+      responses:
+        200:
+          description: Order history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        401:
+          description: Unauthorized Error
+        500:
+          description: Internal Server Error
+
+                          # User ACCESS End 
+
+
+
+                            #Feedback Starts
+# User Feedbacks
+# Put api to submit the feedback by the user
+  paths:
+  /api/user/feedBack/{id}:
+    put:
+      summary: Submit Feedback for Mechanic
+      tags:
+        - Feedback
+      description: Submit feedback for a specific mechanic after completing an order.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the mechanic
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: number
+                  description: Rating for the mechanic (between 1 and 5)
+                comment:
+                  type: string
+                  description: Feedback comment
+      responses:
+        '200':
+          description: Feedback submitted successfully
+        '400':
+          description: Bad Request
+        '404':
+          description: Mechanic not found
+        '500':
+          description: Internal Server Error
+
+
+
+
+
+
+
+# Get api to get the feedback
+
+  /api/user/feedback/{id}:
+    get:
+      summary: Get Feedback for Mechanic
+      tags:
+        - Feedback
+      description: Retrieve feedback for a specific mechanic.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the mechanic
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feedbacks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Feedback'
+        '404':
+          description: Mechanic not found
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    Feedback:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID of the feedback
+        mechanicId:
+          type: string
+          description: ID of the mechanic
+        comment:
+          type: string
+          description: Feedback comment
+        rating:
+          type: number
+          description: Feedback rating
   
   
   
   
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+                                # Feedback End
   
   
   # # Inventory

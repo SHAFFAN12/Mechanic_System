@@ -47,3 +47,15 @@ const connectDb = async()=>{
 app.listen(PORT, ()=>{
     console.log(`Server is running on ${PORT}`)
 } )
+
+
+
+
+
+
+
+
+
+
+
+

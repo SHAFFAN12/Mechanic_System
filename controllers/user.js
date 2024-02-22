@@ -87,41 +87,37 @@ const getallMechanics = async (req, res) => {
 
 
 const makeOrder = async (req, res) => {
-    try {
+  try {
       const userId = req.user.id;
-      const orders = req.body;
+      const order = req.body; // Assuming only one order is sent in the request body
+      
       console.log('Received Request Body:', req.body);
-  
-      const orderResults = await Promise.all(
-        orders.map(async (order) => {
-          const { mechanicId,Service,Location,status } = order;
-  
-          const mechanicid = await Mechanic.findById(mechanicId);
-  
-          if (!mechanicid) {
-            throw new Error(`Mechanic with ID ${mechanicid} not found`);
-          }
-  
-          const newOrder = new Order({
-            user: userId,
-            mechanicId: mechanicid,
-            Service,
-            status,
-            Location,
-          });
-  
-          await newOrder.save();
-          return newOrder;
-        })
-      );
-  
-      res.status(201).json(orderResults);
-    } catch (err) {
+
+      const { mechanicId, Service, Location, status } = order;
+
+      const mechanic = await Mechanic.findById(mechanicId);
+
+      if (!mechanic) {
+          throw new Error(`Mechanic with ID ${mechanicId} not found`);
+      }
+
+      const newOrder = new Order({
+          user: userId,
+          mechanicId: mechanicId,
+          Service,
+          status,
+          Location,
+      });
+
+      await newOrder.save();
+
+      res.status(201).json(newOrder);
+  } catch (err) {
       console.error(err.message);
       res.status(500).json({ msg: 'Server error' });
-    }
-  };
-  
+  }
+};
+
 
 
 
